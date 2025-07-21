@@ -1,5 +1,6 @@
 // src/App.jsx
-import React, { useState, useEffect } from 'react';
+
+import { useState, useEffect } from 'react'; // Passo 1: Importar useEffect
 import { supabase } from './supabaseClient';
 import OperacaoForm from './components/OperacaoForm';
 import OperacoesList from './components/OperacoesList';
@@ -7,93 +8,82 @@ import './App.css';
 
 function App() {
   const [operacoes, setOperacoes] = useState([]);
+  // Passo 2: Criar um estado para armazenar o plano de contas
+  const [planoDeContas, setPlanoDeContas] = useState([]);
   
-  // States do formulário de CRIAÇÃO
-  const [newName, setNewName] = useState('');
-  const [newTipo, setNewTipo] = useState('');
+  const [newDescricao, setNewDescricao] = useState('');
   const [newValor, setNewValor] = useState('');
-  const [newData, setNewData] = useState('');
-  const [newStatus, setNewStatus] = useState('Pendente');
-
-  // States do formulário de EDIÇÃO
-  const [editingId, setEditingId] = useState(null);
-  const [editDescricao, setEditDescricao] = useState('');
-  const [editTipo, setEditTipo] = useState('');
-  const [editValor, setEditValor] = useState('');
-  const [editData, setEditData] = useState('');
-  const [editStatus, setEditStatus] = useState('');
-
-  // --- LÓGICA DE DADOS (FUNÇÕES) ---
+  
+  // Passo 3: Usar useEffect para buscar os dados do plano de contas
   useEffect(() => {
-    getOperacoes();
-  }, []);
+    // Função assíncrona para buscar os dados
+    const fetchPlanoDeContas = async () => {
+      const { data, error } = await supabase
+        .from('plano_de_contas')
+        .select('*')
+        .order('codigo', { ascending: true }); // Ordenamos pelo código para manter a hierarquia
 
-  async function getOperacoes() {
-    const { data } = await supabase.from('operacoes').select('*');
-    setOperacoes(data || []);
-  }
+      if (error) {
+        console.error('Erro ao buscar plano de contas:', error);
+      } else {
+        setPlanoDeContas(data); // Armazena os dados no estado
+      }
+    };
 
-  async function handleCreateOperacao(e) {
-    e.preventDefault();
-    if (!newName || !newValor || !newData || !newTipo) return;
-    const { data, error } = await supabase.from('operacoes').insert([{ Descricao: newName, Tipo: newTipo, Valor: newValor, Data: newData, Status: newStatus }]).select();
+    // Chama a função de busca
+    fetchPlanoDeContas();
+    fetchOperacoes(); // Mantemos a busca de operações que já existia
+  }, []); // O array vazio [] garante que isso rode apenas uma vez, quando o app carregar
+
+  const fetchOperacoes = async () => {
+    const { data, error } = await supabase.from('operacoes').select('*');
+    if (error) console.log('error', error);
+    else setOperacoes(data);
+  };
+
+  const handleCreateOperacao = async () => {
+    // A lógica de criação será atualizada no próximo passo
+    // Por enquanto, vamos nos concentrar em carregar os dados
+    console.log("A lógica de criação será implementada em breve.");
+  };
+
+  const handleDeleteOperacao = async (id) => {
+    const { error } = await supabase.from('operacoes').delete().eq('id', id);
+    if (error) console.log('error', error);
+    else setOperacoes(operacoes.filter((op) => op.id !== id));
+  };
+
+  const handleUpdateOperacao = async (id, updatedFields) => {
+    const { data, error } = await supabase
+      .from('operacoes')
+      .update(updatedFields)
+      .eq('id', id)
+      .select();
+
     if (error) {
-      console.error("Erro:", error);
-    } else if (data) {
-      setOperacoes([...operacoes, data[0]]);
-      setNewName(''); setNewTipo(''); setNewValor(''); setNewData(''); setNewStatus('Pendente');
+      console.log('error', error);
+    } else {
+      setOperacoes(operacoes.map((op) => (op.id === id ? data[0] : op)));
     }
-  }
+  };
 
-  async function handleDeleteOperacao(id) {
-    if (window.confirm("Tem certeza?")) {
-      await supabase.from('operacoes').delete().eq('id', id);
-      setOperacoes(operacoes.filter(op => op.id !== id));
-    }
-  }
-
-  function handleStartEdit(op) {
-    setEditingId(op.id);
-    setEditDescricao(op.Descricao); setEditTipo(op.Tipo); setEditValor(op.Valor); setEditData(op.Data); setEditStatus(op.Status);
-  }
-
-  function handleCancelEdit() {
-    setEditingId(null);
-  }
-
-  async function handleUpdateOperacao(e, id) {
-    e.preventDefault();
-    const { data } = await supabase.from('operacoes').update({ Descricao: editDescricao, Tipo: editTipo, Valor: editValor, Data: editData, Status: editStatus }).eq('id', id).select();
-    setOperacoes(operacoes.map(op => op.id === id ? data[0] : op));
-    setEditingId(null);
-  }
-
-  // Empacotando handlers e states para passar para os componentes filhos
-  const listHandlers = { handleUpdate: handleUpdateOperacao, handleDelete: handleDeleteOperacao, handleStartEdit, handleCancelEdit };
-  const editStates = { editDescricao, setEditDescricao, editTipo, setEditTipo, editValor, setEditValor, editData, setEditData, editStatus, setEditStatus };
-
-  // --- RENDERIZAÇÃO DA INTERFACE ---
   return (
     <div className="App">
       <header className="App-header">
         <h1>Gestor de Operações</h1>
-        
-        <OperacaoForm 
-          handleCreate={handleCreateOperacao}
-          newName={newName} setNewName={setNewName}
-          newTipo={newTipo} setNewTipo={setNewTipo}
-          newValor={newValor} setNewValor={setNewValor}
-          newData={newData} setNewData={setNewData}
-          newStatus={newStatus} setNewStatus={setNewStatus}
+        {/* Passo 4: Passar o plano de contas como prop para o formulário */}
+        <OperacaoForm
+          newDescricao={newDescricao}
+          setNewDescricao={setNewDescricao}
+          newValor={newValor}
+          setNewValor={setNewValor}
+          handleCreateOperacao={handleCreateOperacao}
+          planoDeContas={planoDeContas} 
         />
-
-        <hr />
-        
         <OperacoesList
           operacoes={operacoes}
-          editingId={editingId}
-          handlers={listHandlers}
-          editStates={editStates}
+          handleUpdateOperacao={handleUpdateOperacao}
+          handleDeleteOperacao={handleDeleteOperacao}
         />
       </header>
     </div>
