@@ -18,7 +18,11 @@ function OperacaoItem({
     return (
       <form onSubmit={(e) => handleUpdate(e, op.id)} className="operacao-card-edit">
         <input type="text" value={editDescricao} onChange={(e) => setEditDescricao(e.target.value)} />
-        <input type="text" value={editTipo} onChange={(e) => setEditTipo(e.target.value)} />
+        <select value={editTipo} onChange={(e) => setEditTipo(e.target.value)}>
+  <option value="Receita">Receita</option>
+  <option value="Custo Variável">Custo Variável</option>
+  <option value="Custo Fixo">Custo Fixo</option>
+</select>
         <input type="number" value={editValor} onChange={(e) => setEditValor(e.target.value)} />
         <input type="date" value={editData} onChange={(e) => setEditData(e.target.value)} />
         <select value={editStatus} onChange={(e) => setEditStatus(e.target.value)}>
