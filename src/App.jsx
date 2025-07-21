@@ -1,18 +1,85 @@
+// src/App.jsx
+
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
+// Importando nosso novo componente
+import OperacaoForm from './components/OperacaoForm'; 
 import './App.css';
 
 function App() {
   const [operacoes, setOperacoes] = useState([]);
   
-  // States para o formulário de CRIAÇÃO
   const [newName, setNewName] = useState('');
   const [newTipo, setNewTipo] = useState('');
   const [newValor, setNewValor] = useState('');
   const [newData, setNewData] = useState('');
   const [newStatus, setNewStatus] = useState('Pendente');
 
-  // States para o formulário de EDIÇÃO
+  const [editingId, setEditingId] = useState(null);
+  const [editDescricao, setEditDescricao] = useState('');
+  const [editTipo, setEditTipo] = useState('');
+  const [editValor, setEditValor] = useState('');
+  const [editData, setEditData] = useState('');
+  const [editStatus, setEditStatus] = useState('');
+
+  useEffect(() => { getOperacoes(); }, []);
+
+  async function getOperacoes() { /* ...código sem alteração... */ }
+  async function handleCreateOperacao(e) { /* ...código sem alteração... */ }
+  async function handleDeleteOperacao(id) { /* ...código sem alteração... */ }
+  function handleStartEdit(op) { /* ...código sem alteração... */ }
+  function handleCancelEdit() { /* ...código sem alteração... */ }
+  async function handleUpdateOperacao(e, id) { /* ...código sem alteração... */ }
+    // OBS: Para não deixar o código gigante, omiti o interior das funções
+    // que não foram alteradas. Use as versões do seu arquivo atual.
+    // A única alteração real está no 'return' no final do arquivo.
+
+  return (
+    <div className="App">
+      <header className="App-header">
+        <h1>Gestor de Operações</h1>
+        
+        {/* Chamando nosso novo componente e passando as props necessárias */}
+        <OperacaoForm 
+          handleCreate={handleCreateOperacao}
+          newName={newName} setNewName={setNewName}
+          newTipo={newTipo} setNewTipo={setNewTipo}
+          newValor={newValor} setNewValor={setNewValor}
+          newData={newData} setNewData={setNewData}
+          newStatus={newStatus} setNewStatus={setNewStatus}
+        />
+
+        <hr />
+        <h2>Operações Registradas</h2>
+        <div className="operacoes-list">
+          {operacoes.map((op) => (
+            <div key={op.id} className="operacao-card">
+              {editingId === op.id ? (
+                // MODO DE EDIÇÃO (ainda aqui por enquanto)
+                <form onSubmit={(e) => handleUpdateOperacao(e, op.id)}>{/* ... */}</form>
+              ) : (
+                // MODO DE VISUALIZAÇÃO (ainda aqui por enquanto)
+                <>{/* ... */}</>
+              )}
+            </div>
+          ))}
+        </div>
+      </header>
+    </div>
+  );
+}
+
+// *** CÓDIGO COMPLETO DO App.jsx PARA VOCÊ COPIAR ***
+// (para evitar confusão com as omissões acima)
+function FullApp() {
+  const [operacoes, setOperacoes] = useState([]);
+  
+  const [newName, setNewName] = useState('');
+  const [newTipo, setNewTipo] = useState('');
+  const [newValor, setNewValor] = useState('');
+  const [newData, setNewData] = useState('');
+  const [newStatus, setNewStatus] = useState('Pendente');
+
   const [editingId, setEditingId] = useState(null);
   const [editDescricao, setEditDescricao] = useState('');
   const [editTipo, setEditTipo] = useState('');
@@ -90,27 +157,20 @@ function App() {
       setEditingId(null);
     }
   }
-
+  
   return (
     <div className="App">
       <header className="App-header">
         <h1>Gestor de Operações</h1>
         
-        {/* --- FORMULÁRIO DE CRIAÇÃO RESTAURADO --- */}
-        <form onSubmit={handleCreateOperacao} className="operacao-form">
-          <h3>Adicionar Nova Operação</h3>
-          <input type="text" placeholder="Descrição da Operação" value={newName} onChange={(e) => setNewName(e.target.value)} />
-          <input type="text" placeholder="Tipo (ex: Receita, Custo Fixo)" value={newTipo} onChange={(e) => setNewTipo(e.target.value)} />
-          <input type="number" placeholder="Valor" value={newValor} onChange={(e) => setNewValor(e.target.value)} />
-          <input type="date" value={newData} onChange={(e) => setNewData(e.target.value)} />
-          <select value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
-            <option value="Pendente">Pendente</option>
-            <option value="Pago">Pago</option>
-            <option value="Cancelado">Cancelado</option>
-          </select>
-          <button type="submit">Salvar Nova</button>
-        </form>
-        {/* --- FIM DO FORMULÁRIO RESTAURADO --- */}
+        <OperacaoForm 
+          handleCreate={handleCreateOperacao}
+          newName={newName} setNewName={setNewName}
+          newTipo={newTipo} setNewTipo={setNewTipo}
+          newValor={newValor} setNewValor={setNewValor}
+          newData={newData} setNewData={setNewData}
+          newStatus={newStatus} setNewStatus={setNewStatus}
+        />
 
         <hr />
         <h2>Operações Registradas</h2>
@@ -118,7 +178,6 @@ function App() {
           {operacoes.map((op) => (
             <div key={op.id} className="operacao-card">
               {editingId === op.id ? (
-                // MODO DE EDIÇÃO
                 <form onSubmit={(e) => handleUpdateOperacao(e, op.id)}>
                   <input type="text" value={editDescricao} onChange={(e) => setEditDescricao(e.target.value)} />
                   <input type="text" value={editTipo} onChange={(e) => setEditTipo(e.target.value)} />
@@ -133,7 +192,6 @@ function App() {
                   <button type="button" onClick={handleCancelEdit}>Cancelar</button>
                 </form>
               ) : (
-                // MODO DE VISUALIZAÇÃO
                 <>
                   <h3>{op.Descricao}</h3>
                   <p>Tipo: {op.Tipo}</p>
@@ -152,4 +210,5 @@ function App() {
   );
 }
 
-export default App;
+// Substitua o export padrão por este que usa a função completa
+export default FullApp;
