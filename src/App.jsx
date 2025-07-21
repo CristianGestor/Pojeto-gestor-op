@@ -12,15 +12,13 @@ function App() {
   const [newData, setNewData] = useState('');
   const [newStatus, setNewStatus] = useState('Pendente');
 
-  // --- LÓGICA DE EDIÇÃO ---
-  const [editingId, setEditingId] = useState(null); // Guarda o ID do item sendo editado
-  // States para os campos do formulário de EDIÇÃO
+  // States para o formulário de EDIÇÃO
+  const [editingId, setEditingId] = useState(null);
   const [editDescricao, setEditDescricao] = useState('');
   const [editTipo, setEditTipo] = useState('');
   const [editValor, setEditValor] = useState('');
   const [editData, setEditData] = useState('');
   const [editStatus, setEditStatus] = useState('');
-  // --- FIM DA LÓGICA DE EDIÇÃO ---
 
   useEffect(() => { getOperacoes(); }, []);
 
@@ -29,7 +27,6 @@ function App() {
     setOperacoes(data || []);
   }
 
-  // ... (Função handleCreateOperacao permanece a mesma) ...
   async function handleCreateOperacao(e) {
     e.preventDefault();
     if (!newName || !newValor || !newData || !newTipo) {
@@ -53,7 +50,6 @@ function App() {
     }
   }
 
-
   async function handleDeleteOperacao(id) {
     const isConfirmed = window.confirm("Tem certeza de que deseja excluir esta operação?");
     if (isConfirmed) {
@@ -66,11 +62,8 @@ function App() {
     }
   }
 
-  // --- NOVAS FUNÇÕES PARA EDIÇÃO ---
-  // Inicia o modo de edição para um item
   function handleStartEdit(op) {
     setEditingId(op.id);
-    // Preenche os campos de edição com os dados atuais do item
     setEditDescricao(op.Descricao);
     setEditTipo(op.Tipo);
     setEditValor(op.Valor);
@@ -78,12 +71,10 @@ function App() {
     setEditStatus(op.Status);
   }
 
-  // Cancela o modo de edição
   function handleCancelEdit() {
     setEditingId(null);
   }
 
-  // Salva as alterações no Supabase
   async function handleUpdateOperacao(e, id) {
     e.preventDefault();
     const { data, error } = await supabase
@@ -95,26 +86,39 @@ function App() {
     if (error) {
       alert("Falha ao atualizar operação: " + error.message);
     } else {
-      // Atualiza a lista na tela com os novos dados
       setOperacoes(operacoes.map(op => op.id === id ? data[0] : op));
-      setEditingId(null); // Sai do modo de edição
+      setEditingId(null);
     }
   }
-  // --- FIM DAS NOVAS FUNÇÕES ---
 
   return (
     <div className="App">
       <header className="App-header">
         <h1>Gestor de Operações</h1>
-        {/* Formulário de Criação (sem alteração) */}
-        <form onSubmit={handleCreateOperacao} className="operacao-form">{/* ... */}</form>
+        
+        {/* --- FORMULÁRIO DE CRIAÇÃO RESTAURADO --- */}
+        <form onSubmit={handleCreateOperacao} className="operacao-form">
+          <h3>Adicionar Nova Operação</h3>
+          <input type="text" placeholder="Descrição da Operação" value={newName} onChange={(e) => setNewName(e.target.value)} />
+          <input type="text" placeholder="Tipo (ex: Receita, Custo Fixo)" value={newTipo} onChange={(e) => setNewTipo(e.target.value)} />
+          <input type="number" placeholder="Valor" value={newValor} onChange={(e) => setNewValor(e.target.value)} />
+          <input type="date" value={newData} onChange={(e) => setNewData(e.target.value)} />
+          <select value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
+            <option value="Pendente">Pendente</option>
+            <option value="Pago">Pago</option>
+            <option value="Cancelado">Cancelado</option>
+          </select>
+          <button type="submit">Salvar Nova</button>
+        </form>
+        {/* --- FIM DO FORMULÁRIO RESTAURADO --- */}
+
         <hr />
         <h2>Operações Registradas</h2>
         <div className="operacoes-list">
           {operacoes.map((op) => (
             <div key={op.id} className="operacao-card">
               {editingId === op.id ? (
-                // --- MODO DE EDIÇÃO ---
+                // MODO DE EDIÇÃO
                 <form onSubmit={(e) => handleUpdateOperacao(e, op.id)}>
                   <input type="text" value={editDescricao} onChange={(e) => setEditDescricao(e.target.value)} />
                   <input type="text" value={editTipo} onChange={(e) => setEditTipo(e.target.value)} />
@@ -125,11 +129,11 @@ function App() {
                     <option value="Pago">Pago</option>
                     <option value="Cancelado">Cancelado</option>
                   </select>
-                  <button type="submit">Salvar</button>
+                  <button type="submit">Salvar Alterações</button>
                   <button type="button" onClick={handleCancelEdit}>Cancelar</button>
                 </form>
               ) : (
-                // --- MODO DE VISUALIZAÇÃO ---
+                // MODO DE VISUALIZAÇÃO
                 <>
                   <h3>{op.Descricao}</h3>
                   <p>Tipo: {op.Tipo}</p>
