@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
-import { supabase } from './supabaseClient'
-import './App.css'
+import React, { useState, useEffect } from 'react'; // <--- ADICIONE O 'React,' AQUI
+import { supabase } from './supabaseClient';
+import './App.css';
 
 function App() {
   const [operacoes, setOperacoes] = useState([])
