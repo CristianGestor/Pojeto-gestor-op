@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'; // <--- ADICIONE O 'React,' AQUI
+import React from 'react'; // <-- ESTA É A LINHA QUE ESTAVA FALTANDO
+import { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 import './App.css';
 
