@@ -1,42 +1,27 @@
 // src/components/OperacoesList.jsx
+import React from 'react'; // GARANTE que o React está importado.
 
-import React from 'react'; // <-- ADICIONE OU GARANTA QUE ESTA LINHA EXISTA
-
-// O restante do seu componente OperacoesList...
 function OperacoesList({ operacoes, handleUpdateOperacao, handleDeleteOperacao }) {
-  // ... toda a lógica e o JSX da lista
-  return (
-    <ul>
-      {/* ... conteúdo da lista ... */}
-    </ul>
-  );
-}
+  if (!operacoes || operacoes.length === 0) {
+    return <p>Nenhuma operação encontrada.</p>;
+  }
 
-export default OperacoesList;
-import React from 'react';
-import OperacaoItem from './OperacaoItem';
-
-function OperacoesList({ 
-  operacoes, 
-  editingId, 
-  handlers, 
-  editStates 
-}) {
   return (
     <div className="operacoes-list">
-      <h2>Operações Registradas</h2>
-      {operacoes.map((op) => (
-        <OperacaoItem 
-          key={op.id}
-          op={op}
-          editingId={editingId}
-          handleUpdate={handlers.handleUpdate}
-          handleDelete={handlers.handleDelete}
-          handleStartEdit={handlers.handleStartEdit}
-          handleCancelEdit={handlers.handleCancelEdit}
-          editStates={editStates}
-        />
-      ))}
+      <h3>Operações Recentes</h3>
+      <ul>
+        {operacoes.map((op) => (
+          <li key={op.id}>
+            <span>{new Date(op.created_at).toLocaleDateString()}</span>
+            <span>{op.descricao}</span>
+            {/* A conta virá aqui no futuro */}
+            <span>R\$ {op.valor.toFixed(2)}</span>
+            <button onClick={() => handleDeleteOperacao(op.id)} className="delete-btn">
+              Excluir
+            </button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
