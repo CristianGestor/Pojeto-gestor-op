@@ -1,5 +1,6 @@
 // src/App.jsx
-
+import React, { useState, useEffect } from 'react';
+import { supabase } from './supabaseClient';
 import { useState, useEffect } from 'react'; // Passo 1: Importar useEffect
 import { supabase } from './supabaseClient';
 import OperacaoForm from './components/OperacaoForm';
