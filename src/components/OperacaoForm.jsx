@@ -1,5 +1,27 @@
 // src/components/OperacaoForm.jsx
 
+import React from 'react'; // <-- ADICIONE OU GARANTA QUE ESTA LINHA EXISTA
+
+// O restante do seu componente OperacaoForm...
+function OperacaoForm({
+  newDescricao,
+  setNewDescricao,
+  newValor,
+  setNewValor,
+  handleCreateOperacao,
+  planoDeContas, // Recebe o plano de contas
+}) {
+  // ... toda a lógica e o JSX do formulário
+  return (
+    <div>
+      {/* ... conteúdo do formulário ... */}
+    </div>
+  );
+}
+
+export default OperacaoForm;
+
+
 import React from 'react';
 
 // O componente recebe várias "props" (propriedades) do componente pai (App.jsx)
