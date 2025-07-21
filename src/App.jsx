@@ -37,9 +37,9 @@ function App() {
     // Envia os dados para a tabela 'operacoes' no Supabase
     const { data, error } = await supabase
       .from('operacoes')
-      .insert([
-        { name: newName, valor: newValor, data: newData, status: newStatus },
-      ])
+     .insert([
+  { name: newName, valor: newValor, data_lancamento: newData, status: newStatus },
+])
       .select();
 
     if (error) {
