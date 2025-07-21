@@ -16,7 +16,12 @@ function OperacaoForm({
     <form onSubmit={handleCreate} className="operacao-form">
       <h3>Adicionar Nova Operação</h3>
       <input type="text" placeholder="Descrição da Operação" value={newName} onChange={(e) => setNewName(e.target.value)} />
-      <input type="text" placeholder="Tipo (ex: Receita, Custo Fixo)" value={newTipo} onChange={(e) => setNewTipo(e.target.value)} />
+      <select value={newTipo} onChange={(e) => setNewTipo(e.target.value)} required>
+  <option value="" disabled>Selecione o Tipo</option>
+  <option value="Receita">Receita</option>
+  <option value="Custo Variável">Custo Variável</option>
+  <option value="Custo Fixo">Custo Fixo</option>
+</select>
       <input type="number" placeholder="Valor" value={newValor} onChange={(e) => setNewValor(e.target.value)} />
       <input type="date" value={newData} onChange={(e) => setNewData(e.target.value)} />
       <select value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
